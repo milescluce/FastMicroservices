@@ -10,8 +10,7 @@ from fastapi.responses import HTMLResponse
 from loguru import logger as log
 from singleton_decorator import singleton
 from toomanythreads import ThreadedServer
-
-from fasttemplate import FastTemplates
+from fastj2 import FastTemplates
 
 
 @dataclass

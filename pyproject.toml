@@ -1,6 +1,6 @@
 [project]
 name = "fastmicroservices"
-version = "0.1.0"
+version = "0.1.2"
 description = ""
 authors = [
     {name = "genderlesspit",email = "59433707+genderlesspit@users.noreply.github.com"}
@@ -16,7 +16,8 @@ dependencies = [
     "fastcloudflare (>=0.1.0,<0.2.0)",
     "aiohttp (>=3.12.14,<4.0.0)",
     "toomanythreads (>=0.2.3,<0.3.0)",
-    "fastapi (>=0.116.1,<0.117.0)"
+    "fastapi (>=0.116.1,<0.117.0)",
+    "fastj2 (>=0.1.0,<0.2.0)"
 ]
 
 [tool.poetry]

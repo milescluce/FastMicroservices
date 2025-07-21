@@ -298,6 +298,23 @@ pywershell = ">=0.3,<0.4"
 toomanythreads = ">=0.2.3,<0.3.0"
 
 [[package]]
+name = "fastj2"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "<4.0,>=3.13"
+groups = ["main"]
+files = [
+    {file = "fastj2-0.1.0-py3-none-any.whl", hash = "sha256:d8bcd0a7740e99884308e7a4bdc7b0bd7b46586579af84eb1253208e07d261cd"},
+    {file = "fastj2-0.1.0.tar.gz", hash = "sha256:a32d536fa186970d30b8a5bf377098d35041464245a7f4618d7609894aa28fe4"},
+]
+
+[package.dependencies]
+importcontext = ">=0.1.0,<0.2.0"
+loguru = ">=0.7.3,<0.8.0"
+starlette = ">=0.47.2,<0.48.0"
+
+[[package]]
 name = "frozenlist"
 version = "1.7.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -500,6 +517,21 @@ files = [
 
 [package.extras]
 all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2)"]
+
+[[package]]
+name = "importcontext"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = "<4.0,>=3.13"
+groups = ["main"]
+files = [
+    {file = "importcontext-0.1.0-py3-none-any.whl", hash = "sha256:22ea5335a11550f0c757143895f4af2f5459efcedbd7647f0b55ff4a0927f12f"},
+    {file = "importcontext-0.1.0.tar.gz", hash = "sha256:fea31db814cb86d0a766263677579628d61692aeeee000a733b5c2f1d09d27b2"},
+]
+
+[package.dependencies]
+loguru = ">=0.7.3,<0.8.0"
 
 [[package]]
 name = "loguru"
@@ -1185,4 +1217,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "8be43383b374ef7062f5a2147ce217c34ad9fae8480af613c2a19607a5f97410"
+content-hash = "181eb714335bb7ceae1d217d181c3e2ba0d51b10e14712064bc54a2d278685f9"
