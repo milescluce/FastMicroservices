@@ -1,11 +1,9 @@
 import time
 
-from fastapi import FastAPI
 from toomanythreads import ThreadedServer
 
 from fastmicroservices import Macroservice
 from fastmicroservices import Microservice
-from loguru import logger as log
 
 
 class Dummy(ThreadedServer, Microservice):
@@ -13,10 +11,13 @@ class Dummy(ThreadedServer, Microservice):
         ThreadedServer.__init__(self)
         Microservice.__init__(self, macroservice)
 
+        @self.get("/")
+        def foobar():
+            return "foobar"
+
+
 if __name__ == "__main__":
-    # asyncio.run(debug())
-    # PublicApp().thread.start()
     m = Macroservice()
     serv = Dummy(m)
-    log.debug(serv.api.openapi)
+    m.thread.start()
     time.sleep(100)
