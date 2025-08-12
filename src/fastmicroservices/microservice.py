@@ -1,7 +1,8 @@
-from pyzurecli import PyzureServer
+from fastapi import FastAPI
 from toomanysessions import SessionedServer
 from toomanythreads import ThreadedServer
 
+from . import check_type
 from .macroservice import Macroservice
 
 
@@ -14,15 +15,12 @@ from .macroservice import Macroservice
 
 class Microservice:
     def __init__(self, macroservice: Macroservice):
+        check_type(self)
         self.macro = macroservice
-        self.macro[self.__class__.__name__] = self
-        accepted_types = [ThreadedServer, PyzureServer, SessionedServer]
-        type_matches = 0
-        for typ in accepted_types:
-            if not isinstance(self, typ): continue
-            type_matches = type_matches + 1
-        if type_matches == 0: raise TypeError(f"Inheriting class is not one of the following: {accepted_types}")
-        # if not self.routes: raise AttributeError("Microservices must have a routes attribute!")
+        name = self.__class__.__name__
+        self.macro[name] = self
+        self.macro.mount(f"/{name}", self)
+        self.database = self.macro.database
         super().__init__()
 
     # @property
