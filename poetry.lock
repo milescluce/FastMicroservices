@@ -1339,14 +1339,14 @@ toml = ">=0.10.2,<0.11.0"
 
 [[package]]
 name = "toomanyports"
-version = "0.1.1"
+version = "0.1.11"
 description = "Port allocation cleanup usage reporting"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "toomanyports-0.1.1-py3-none-any.whl", hash = "sha256:bc7a8f44b980baec94b817bddd6c27d76d5fd9fc3eb7cf8700effc7379cbd023"},
-    {file = "toomanyports-0.1.1.tar.gz", hash = "sha256:dbd6ed44451c6a0a14ec87967f9bd1a88ef879374491593f012637b2c24aca3b"},
+    {file = "toomanyports-0.1.11-py3-none-any.whl", hash = "sha256:9ccfb671fba6cfca44b8e90ffefc08f20add9572149bc54faaed8d54c46adea0"},
+    {file = "toomanyports-0.1.11.tar.gz", hash = "sha256:74815881c9f31ac76dfbd44300d043d898d013fc6cd44a6ac57c2597e7f2d566"},
 ]
 
 [package.dependencies]
@@ -1381,18 +1381,19 @@ toomanythreads = ">=0.2.3,<0.3.0"
 
 [[package]]
 name = "toomanythreads"
-version = "0.2.73"
+version = "0.2.75"
 description = "A singleton-based thread management system"
 optional = false
 python-versions = "<4.0,>=3.13"
 groups = ["main"]
 files = [
-    {file = "toomanythreads-0.2.73-py3-none-any.whl", hash = "sha256:c97b92f1b3c0c95f622192a808699c59874e1aeab6dbe7beae2e38d6e374ee54"},
-    {file = "toomanythreads-0.2.73.tar.gz", hash = "sha256:ed94a71b39f2056ea255e0eafbe27128e9400853b5621570fb936de8ad409e82"},
+    {file = "toomanythreads-0.2.75-py3-none-any.whl", hash = "sha256:d64ad5f3a311c05749ec64d09a5e15a5bb98114002fd3724246beb975a32f2f3"},
+    {file = "toomanythreads-0.2.75.tar.gz", hash = "sha256:287eace04c465ba763ca3ff322d9399446c71674df829cd16d0af0422c462d74"},
 ]
 
 [package.dependencies]
 fastapi = ">=0.116.1,<0.117.0"
+httpx = ">=0.28.1,<0.29.0"
 loguru = ">=0.7.3,<0.8.0"
 singleton-decorator = ">=1.0.0"
 starlette = ">=0.47.2,<0.48.0"
@@ -1476,4 +1477,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "349d701e9ff3dcfdf853bd6a0a345abffeca4b87a02a36d7f0c9326780b3dade"
+content-hash = "3fde88ddb59e6abad6623083730ee1c0286806b45b4e6451288d1204f75d23cf"

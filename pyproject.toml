@@ -1,6 +1,6 @@
 [project]
 name = "fastmicroservices"
-version = "0.1.44"
+version = "0.1.45"
 description = "Connect FastAPI microservices easily."
 authors = [
     {name = "Miles Copeland Luce"}
@@ -10,8 +10,8 @@ requires-python = ">=3.13,<4.0"
 dependencies = [
     "starlette (>=0.47.2,<0.48.0)",
     "loguru (>=0.7.3,<0.8.0)",
-    "toomanyports (>=0.1.1,<0.2.0)",
-    "toomanythreads (>=0.2.3,<0.3.0)",
+    "toomanyports (>=0.1.11,<0.2.0)",
+    "toomanythreads (>=0.2.75,<0.3.0)",
     "fastapi (>=0.116.1,<0.117.0)",
     "fastj2 (>=0.1.11,<0.2.0)",
     "toomanysessions (>=0.1.9960,<0.2.0)",

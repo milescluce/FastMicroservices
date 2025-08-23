@@ -85,12 +85,28 @@ class Macroservice(FastJ2, CWD):
 
             if page.type == "microservice":
                 obj: ThreadedServer = page.obj
-                iframe_url = obj.url  # This is the microservice's URL (e.g., http://localhost:8001)
+                iframe_url = self.build_microservice_url(obj.url, request)
 
                 return self.safe_render(
                     "microservice_iframe.html",
                     url=iframe_url,
                 )
+
+    def build_microservice_url(self, base_url: str, request) -> str:
+        """Build microservice URL with forwarded cookies"""
+        if not request.cookies:
+            return base_url
+
+        from urllib.parse import urlencode
+
+        # Convert cookies to query parameters
+        cookie_params = {
+            f'cookie_{name}': value
+            for name, value in request.cookies.items()
+        }
+
+        separator = "&" if "?" in base_url else "?"
+        return f"{base_url}{separator}{urlencode(cookie_params)}"
 
     def __repr__(self):
         return "[Macroservice]"
