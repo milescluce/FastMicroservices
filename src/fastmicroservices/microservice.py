@@ -19,9 +19,7 @@ class Microservice:
         self.macro = macroservice
         name = self.__class__.__name__
         self.macro[name] = self
-        self.macro.mount(f"/{name}", self)
-        self.database = self.macro.database
-        super().__init__()
+        self.macro.link(self)
 
     # @property
     # def api(self):

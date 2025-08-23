@@ -29,172 +29,134 @@ DEFAULT_INDEX = """
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PhazeDash</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.1.1/css/pico.min.css">
+    <title>FastMicroservices</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <style>
-        :root {
-            --sidebar-width: 250px;
-            --header-height: 80px;
-            --dark-blue: #1e3a8a;
-            --darker-blue: #1e40af;
-        }
-
-        body { margin: 0; padding: 0; }
-
-        .layout {
-            display: grid;
-            grid-template-areas:
-                "sidebar header"
-                "sidebar main";
-            grid-template-columns: var(--sidebar-width) 1fr;
-            grid-template-rows: var(--header-height) 1fr;
-            min-height: 100vh;
-        }
-
-        header.main-header {
-            grid-area: header;
-            background: var(--dark-blue);
-            color: white;
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        header.main-header h1 {
+        * {
             margin: 0;
-            color: white;
-        }
-
-        .sidebar {
-            grid-area: sidebar;
-            background: var(--dark-blue);
-            padding: 1rem;
-            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
-        }
-
-        .sidebar ul {
-            list-style: none;
             padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar li {
-            margin-bottom: 0.5rem;
-            width: 100%;
-        }
-
-        .sidebar a {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            color: rgba(255, 255, 255, 0.8);
-            border-left: 3px solid transparent;
-            width: 100%;
             box-sizing: border-box;
         }
 
-        .sidebar a:hover {
-            background: rgba(255, 255, 255, 0.1);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #1a1a2e;
             color: white;
-            transform: translateX(4px);
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .sidebar .page-icon {
-            font-size: 1.2em;
-            width: 24px;
+        .topbar {
+            height: 60px;
+            background: #2d2d44;
+            border-bottom: 1px solid #444;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            gap: 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+        }
+
+        .main-content {
+            height: calc(100vh - 60px);
+            width: 100%;
+        }
+
+        .main-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .welcome {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
             text-align: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
 
-        .sidebar .page-title {
-            font-weight: 500;
+        .welcome h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
         }
 
-        .content {
-            grid-area: main;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-
-        /* Color accents for sidebar links */
-        {% for page in pages %}
-        .sidebar a[data-page="{{ page.name }}"] {
-            {% if page.color %}border-left-color: {{ page.color }};{% endif %}
-        }
-        .sidebar a[data-page="{{ page.name }}"]:hover {
-            {% if page.color %}
-            background: {{ page.color }}25;
-            border-left-color: {{ page.color }};
-            {% endif %}
-        }
-        {% endfor %}
-
-        @media (max-width: 768px) {
-            .layout {
-                grid-template-areas:
-                    "header"
-                    "sidebar"
-                    "main";
-                grid-template-columns: 1fr;
-                grid-template-rows: var(--header-height) auto 1fr;
-            }
-
-            .sidebar {
-                padding: 0.5rem;
-            }
-
-            .sidebar ul {
-                display: flex;
-                gap: 0.5rem;
-                overflow-x: auto;
-                padding: 0.5rem 0;
-            }
-
-            .sidebar li {
-                margin-bottom: 0;
-                white-space: nowrap;
-            }
+        .welcome p {
+            opacity: 0.7;
         }
     </style>
 </head>
 <body>
-    <div class="layout">
-        <header class="main-header">
-            <h1>My Index</h1>
-        </header>
+    <div class="topbar">
+        <div class="logo">PhazeDash</div>
 
-        <nav class="sidebar">
-            <ul>
-                {% for page in pages %}
-                <li>
-                    <a href="#"
-                       hx-get="/page/{{ page.name }}"
-                       hx-target="#main-content"
-                       data-page="{{ page.name }}">
-                        {% if page.icon %}
-                        <span class="page-icon">{{ page.icon }}</span>
-                        {% endif %}
-                        <span class="page-title">{{ page.title }}</span>
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
+        <nav class="nav-buttons">
+            {% for page in pages %}
+            <a class="nav-btn"
+               hx-get="/page/{{ page.name }}"
+               hx-target="#main-content"
+               data-page="{{ page.name }}"
+               onclick="setActiveButton(this)">
+                {{ page.title }}
+            </a>
+            {% endfor %}
         </nav>
-
-        <main class="content">
-            <div id="main-content">
-                <h2>Welcome</h2>
-                <p>Select a service from the sidebar.</p>
-            </div>
-        </main>
     </div>
+
+    <div id="main-content" class="main-content"
+         hx-get="/page/dashboard"
+         hx-trigger="load"
+         hx-swap="innerHTML">
+        <div class="welcome">
+            <div>
+                <h1>Welcome to PhazeDash</h1>
+                <p>Select a service from the navigation above to get started.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setActiveButton(clickedButton) {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedButton.classList.add('active');
+        }
+    </script>
 </body>
 </html>
 """

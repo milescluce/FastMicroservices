@@ -5,7 +5,7 @@ from fastapi import Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastj2 import FastJ2
 from loguru import logger as log
-from p2d2 import Database
+# from p2d2 import Database
 from toomanyconfigs import CWD
 from toomanysessions import SessionedServer
 from toomanythreads import ThreadedServer
@@ -14,14 +14,14 @@ from . import DEFAULT_INDEX, extract_title_from_html, PageConfig, generate_color
 
 
 class Macroservice(FastJ2, CWD):
-    def __init__(self, database: Database = None, verbose = DEBUG, **kwargs):
+    def __init__(self, verbose = DEBUG, **kwargs):
         check_type(self)
         self.verbose = verbose
-        self.database = database
-        self.mount("/database", database._api) #type: ignore
-        if self.database:
-            if not isinstance(database, Database): raise RuntimeError(
-                "Macroservices are only compatible with P2D2.Database!\nSee https://pypi.org/project/p2d2/")
+        # self.database = database
+        # self.mount("/database", database._api) #type: ignore
+        # if self.database:
+        #     if not isinstance(database, Database): raise RuntimeError(
+        #         "Macroservices are only compatible with P2D2.Database!\nSee https://pypi.org/project/p2d2/")
         for kwarg in kwargs:
             setattr(self, kwarg, kwargs.get(kwarg))
         self.microservices = {}
@@ -35,6 +35,17 @@ class Macroservice(FastJ2, CWD):
                     },
                     "static_pages": {
                     },
+                    "microservice_iframe.html": """
+<div class="page-content" style="height: calc(100vh - 60px); padding: 0; margin: 0;">
+    <iframe src="{{ url }}"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            class="microservice-frame"
+            style="display: block;">
+    </iframe>
+</div>
+"""
                 }
             }
         )
@@ -73,19 +84,12 @@ class Macroservice(FastJ2, CWD):
                 )
 
             if page.type == "microservice":
-                obj = page.obj
-                if not getattr(obj, "forward", None):
-                    log.error(
-                        "Microservices need a 'forward' method to work properly."
-                        "\nSee TooManyThreads.ThreadedServer.forward for reference."
-                        "\nAlternatively, directly inherit your microservice from TooManyThreads.ThreadedServer."
-                        "\nSee documentation: https://pypi.org/project/toomanythreads/"
-                    )
-                    raise AttributeError("Microservices need a 'forward' method")
-                obj.forward: ThreadedServer.forward  #type: ignore
-                return await obj.forward(
-                    path=f"/{path}",
-                    request=request
+                obj: ThreadedServer = page.obj
+                iframe_url = obj.url  # This is the microservice's URL (e.g., http://localhost:8001)
+
+                return self.safe_render(
+                    "microservice_iframe.html",
+                    url=iframe_url,
                 )
 
     def __repr__(self):
