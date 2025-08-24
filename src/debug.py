@@ -1,6 +1,7 @@
 import time
 
 from loguru import logger as log
+from starlette.requests import Request
 from starlette.responses import HTMLResponse
 from toomanysessions import SessionedServer
 from toomanythreads import ThreadedServer
@@ -32,7 +33,7 @@ class MyMicroservice(Microservice, ThreadedServer):
         print(f"MyMicroservice: After Microservice.__init__ - port: {self.port}")
 
         @self.get("/")
-        def foobar():
+        def foobar(request: Request):
             html = """
            <!DOCTYPE html>
            <html lang="en">

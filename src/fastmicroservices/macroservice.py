@@ -1,3 +1,4 @@
+import urllib
 from pathlib import Path
 from typing import List, Any
 
@@ -65,8 +66,8 @@ class Macroservice(FastJ2, CWD):
                 pages=self.pages
             )
 
-        @self.get("/page/{page_name}/{path:path}")  #type: ignore
-        async def get_page(page_name: str, path, request: Request):
+        @self.get("/page/{page_name}")  #type: ignore
+        async def get_page(page_name: str, request: Request):
             """Serve a specific static page by filename."""
             pages = self.pages
             log.debug(f"{self}: Looking for page_name: '{page_name}'")
@@ -84,29 +85,17 @@ class Macroservice(FastJ2, CWD):
                 )
 
             if page.type == "microservice":
-                obj: ThreadedServer = page.obj
-                iframe_url = self.build_microservice_url(obj.url, request)
+                cookies = request.cookies.copy()
+                obj = page.obj
+                query_string = urllib.parse.urlencode(cookies, doseq=True)
+                iframe_url = f"{obj.url}?{query_string}"
+                log.debug(f"{self}: Requesting iframe from {iframe_url}")
 
                 return self.safe_render(
                     "microservice_iframe.html",
                     url=iframe_url,
+                    cookies=cookies
                 )
-
-    def build_microservice_url(self, base_url: str, request) -> str:
-        """Build microservice URL with forwarded cookies"""
-        if not request.cookies:
-            return base_url
-
-        from urllib.parse import urlencode
-
-        # Convert cookies to query parameters
-        cookie_params = {
-            f'cookie_{name}': value
-            for name, value in request.cookies.items()
-        }
-
-        separator = "&" if "?" in base_url else "?"
-        return f"{base_url}{separator}{urlencode(cookie_params)}"
 
     def __repr__(self):
         return "[Macroservice]"
