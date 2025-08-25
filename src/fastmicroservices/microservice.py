@@ -23,6 +23,7 @@ class Microservice:
         name = self.__class__.__name__
         self.macro[name] = self
         self.macro.link(self)
+        self.proxied_url = f"{self.macro.url}/microservice/{self.__class__.__name__.lower()}/"
         #
         # @self.get("/gateway")
         # def iframe(request: Request):
