@@ -9,13 +9,14 @@ from loguru import logger as log
 # from p2d2 import Database
 from toomanyconfigs import CWD
 from toomanysessions import SessionedServer
-from toomanythreads import ThreadedServer
 
-from . import DEFAULT_INDEX, extract_title_from_html, PageConfig, generate_color_from_name, DEBUG, check_type, are_both_sessioned_server
+from . import extract_title_from_html, PageConfig, generate_color_from_name, DEBUG, check_type, \
+    are_both_sessioned_server
+from .templates import microservice_iframe, index, fastmicroservices_css
 
 
 class Macroservice(FastJ2, CWD):
-    def __init__(self, verbose = DEBUG, **kwargs):
+    def __init__(self, verbose=DEBUG, **kwargs):
         check_type(self)
         self.verbose = verbose
         # self.database = database
@@ -25,48 +26,43 @@ class Macroservice(FastJ2, CWD):
         #         "Macroservices are only compatible with P2D2.Database!\nSee https://pypi.org/project/p2d2/")
         for kwarg in kwargs:
             setattr(self, kwarg, kwargs.get(kwarg))
-        self.microservices = {}
-        self.cached_pages = []
-        CWD.__init__(
+        FastJ2.__init__(
             self,
             {
                 "templates": {
-                    "index_page": {
-                        "index.html": DEFAULT_INDEX
+                    "css": {
+                        "9-fastmicroservices": {
+                            "fastmicroservices.css": fastmicroservices_css
+                        }
                     },
-                    "static_pages": {
-                    },
-                    "microservice_iframe.html": """
-<div class="page-content" style="height: calc(100vh - 60px); padding: 0; margin: 0;">
-    <iframe src="{{ url }}"
-            width="100%"
-            height="100%"
-            frameborder="0"
-            class="microservice-frame"
-            style="display: block;">
-    </iframe>
-</div>
-"""
-                }
-            }
-        )
-        self.templates: Path = self.templates._path
-        self.index: Path = self.templates / "index_page" / "index.html"
-        self.static_pages: Path = self.templates / "static_pages"
-        FastJ2.__init__(
-            self,
-            cwd=self.cwd
-        )
+                    "html": {
+                        "content": {
+                            "microservice_iframe.html": microservice_iframe,
+                            "index.html": index,
+                            "static_pages": {
 
-        @self.get("/", response_class=HTMLResponse)  #type: ignore
+                            },
+                        }
+                    },
+                }
+            },
+            cwd=Path.cwd()
+        )
+        self.microservices = {}
+        self.cached_pages = []
+        self.templates: Path = self.templates._path
+        self.index: Path = self.templates / "html" / "content" / "index.html"
+        self.static_pages: Path = self.templates / "html" / "content" / "static_pages"
+
+        @self.get("/", response_class=HTMLResponse)  # type: ignore
         async def home(request: Request):
             return self.safe_render(
-                f"index_page/{self.index.name}",
+                f"{self.index.name}",
                 request=request,
                 pages=self.pages
             )
 
-        @self.get("/page/{page_name}")  #type: ignore
+        @self.get("/page/{page_name}")  # type: ignore
         async def get_page(page_name: str, request: Request):
             """Serve a specific static page by filename."""
             pages = self.pages
@@ -79,7 +75,7 @@ class Macroservice(FastJ2, CWD):
             if page.type == "static":
                 template_name = page.name
                 return self.safe_render(
-                    template_name,
+                    f"static_pages/{template_name}",
                     request=request,
                     page=page
                 )
@@ -124,7 +120,7 @@ class Macroservice(FastJ2, CWD):
         elif new_pages == len(self.cached_pages):
             log.debug(f"{self}: No new pages found! Using cache.")
         else:
-            if self.verbose: log.debug(f"{self}: Discovering pages in {self.static_pages}...") #type: ignore
+            if self.verbose: log.debug(f"{self}: Discovering pages in {self.static_pages}...")  # type: ignore
             for page_path in self.static_pages.glob("*.html"):
                 title = extract_title_from_html(page_path) or page_path.stem.replace('_', ' ').title()
                 cfg = PageConfig(
@@ -138,9 +134,9 @@ class Macroservice(FastJ2, CWD):
                     auto_discovered=True
                 )
                 discovered.append(cfg)
-                if self.verbose: log.debug(f"{self}: Discovered page {cfg.name} titled '{cfg.title}'")  #type: ignore
+                if self.verbose: log.debug(f"{self}: Discovered page {cfg.name} titled '{cfg.title}'")  # type: ignore
 
-            if self.verbose: log.debug(f"{self}: Discovering microservices in {self.microservices}...")  #type: ignore
+            if self.verbose: log.debug(f"{self}: Discovering microservices in {self.microservices}...")  # type: ignore
             for serv in self.microservices:
                 inst = self.microservices.get(serv)
                 title: str = serv or getattr(inst, 'title', None)
@@ -155,7 +151,7 @@ class Macroservice(FastJ2, CWD):
                     auto_discovered=True
                 )
                 discovered.append(cfg)
-                if self.verbose: log.debug(f"{self}: Discovered page {cfg.name} titled '{cfg.title}'")  #type: ignore
+                if self.verbose: log.debug(f"{self}: Discovered page {cfg.name} titled '{cfg.title}'")  # type: ignore
 
         self.cached_pages = discovered
         return self.cached_pages
