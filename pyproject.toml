@@ -1,6 +1,6 @@
 [project]
 name = "fastmicroservices"
-version = "0.1.46"
+version = "0.1.48"
 description = "Connect FastAPI microservices easily."
 authors = [
     {name = "Miles Copeland Luce"}

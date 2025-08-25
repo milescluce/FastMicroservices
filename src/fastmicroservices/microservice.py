@@ -1,6 +1,9 @@
 from fastapi import FastAPI
+from starlette.requests import Request
+from starlette.responses import HTMLResponse, RedirectResponse
 from toomanysessions import SessionedServer
 from toomanythreads import ThreadedServer
+from loguru import logger as log
 
 from . import check_type
 from .macroservice import Macroservice
@@ -20,6 +23,14 @@ class Microservice:
         name = self.__class__.__name__
         self.macro[name] = self
         self.macro.link(self)
+        #
+        # @self.get("/gateway")
+        # def iframe(request: Request):
+        #     query_params = request.query_params
+        #     log.debug(f"gateway")
+        #     return RedirectResponse(
+        #
+        #     )
 
     # @property
     # def api(self):

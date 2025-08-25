@@ -6,9 +6,11 @@ from fastapi import Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastj2 import FastJ2
 from loguru import logger as log
+from starlette.responses import Response
 # from p2d2 import Database
 from toomanyconfigs import CWD
 from toomanysessions import SessionedServer
+from toomanythreads import ThreadedServer
 
 from . import extract_title_from_html, PageConfig, generate_color_from_name, DEBUG, check_type, \
     are_both_sessioned_server
@@ -62,6 +64,46 @@ class Macroservice(FastJ2, CWD):
                 pages=self.pages
             )
 
+        @self.get("/microservice/{page_name}/{path:path}")
+        @self.post("/microservice/{page_name}/{path:path}")
+        async def proxy_microservice(request: Request, page_name: str, path: str):
+            # Get the microservice URL from your registry
+            pages = self.pages
+            log.debug(f"{self}: Looking for page_name: '{page_name}'")
+            log.debug(f"{self}: Available pages: {[(p.name, p.type) for p in pages]}")
+            microservice = next((p for p in self.pages if p.name == page_name), None)
+            if not microservice: raise HTTPException(status_code=404, detail=f"Microservice '{page_name}' not found")
+            target_url = f"{microservice.obj.url}/{path}"
+
+            # Forward all query params
+            if request.query_params:
+                target_url += f"?{request.query_params}"
+
+            import httpx
+            async with httpx.AsyncClient() as client:
+                # Forward the request with all headers, cookies, and body
+                if request.method == "GET":
+                    response = await client.get(
+                        target_url,
+                        cookies=request.cookies,
+                        headers=dict(request.headers)
+                    )
+                else:  # POST, PUT, etc.
+                    body = await request.body()
+                    response = await client.request(
+                        request.method,
+                        target_url,
+                        content=body,
+                        cookies=request.cookies,
+                        headers=dict(request.headers)
+                    )
+
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers)
+            )
+
         @self.get("/page/{page_name}")  # type: ignore
         async def get_page(page_name: str, request: Request):
             """Serve a specific static page by filename."""
@@ -82,15 +124,13 @@ class Macroservice(FastJ2, CWD):
 
             if page.type == "microservice":
                 cookies = request.cookies.copy()
-                obj = page.obj
+                obj: ThreadedServer = page.obj
                 query_string = urllib.parse.urlencode(cookies, doseq=True)
-                iframe_url = f"{obj.url}?{query_string}"
+                iframe_url = f"/microservice/{page_name}/?{query_string}"
                 log.debug(f"{self}: Requesting iframe from {iframe_url}")
-
                 return self.safe_render(
                     "microservice_iframe.html",
-                    url=iframe_url,
-                    cookies=cookies
+                    url=iframe_url
                 )
 
     def __repr__(self):
